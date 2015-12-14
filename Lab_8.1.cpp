@@ -83,14 +83,18 @@ int main() {
 	Texture body_car_image, wheel_image;
 	body_car_image.loadFromFile("images/car.png");
 	wheel_image.loadFromFile("images/wheel.png");
+
 	CarSprites car;
 	car.body_car.setTexture(body_car_image);
 	car.lef_wheel.setTexture(wheel_image);
 	car.right_wheel.setTexture(wheel_image);
 	car.set_sprites_origin();
+
 	ContextSettings settings;
 	settings.antialiasingLevel = 8;
+
 	RenderWindow window(VideoMode(WINDOW_SIZE.x, WINDOW_SIZE.y), "lab_8.1", Style::Default, settings);
 	start_move_time(window, car);
+
 	return 0;
 }
