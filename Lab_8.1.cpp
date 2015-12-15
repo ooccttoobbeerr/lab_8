@@ -44,10 +44,7 @@ struct CarSprites {
 		}
 
 		else {
-			if (speed > 0)
-				speed -= (acceleration * time) / 2;
-			if (speed < 0)
-				speed += (acceleration * time) / 2;
+			((speed < 0) ? speed += (acceleration * time) / 2 : speed -= (acceleration * time) / 2);
 		}
 		coord_car.x += speed;
 		rotation = coord_car.x * 360 / CIRCUMFERENCE;
