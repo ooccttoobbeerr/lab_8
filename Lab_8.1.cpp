@@ -7,15 +7,19 @@
 using namespace sf;
 using namespace std;
 
-Vector2f WINDOW_SIZE = { 980, 240 };
-Vector2f LEFT_WHEEL = { 162, 62 };
-Vector2f RIGHT_WHEEL = { 43, 62 };
+const Vector2f WINDOW_SIZE = { 980, 240 };
+const Vector2f LEFT_WHEEL = { 162, 62 };
+const Vector2f RIGHT_WHEEL = { 43, 62 };
 const int RADIUS_WHEEL = 16;
 const float CIRCUMFERENCE = RADIUS_WHEEL * 2 * M_PI;
 
 struct CarSprites {
-	Sprite body_car, lef_wheel, right_wheel;
-	float rotation = 0, speed = 0, acceleration = 0.0005;
+	Sprite body_car;
+	Sprite lef_wheel;
+	Sprite right_wheel;
+	float rotation = 0;
+	float speed = 0;
+	float acceleration = 0.005;
 	Vector2f coord_car = { 0, 110 };
 
 	void set_sprites_origin() {
@@ -38,6 +42,7 @@ struct CarSprites {
 		else if (event.type == Event::KeyPressed && event.key.code == Keyboard::Left) {
 			speed -= acceleration * time;
 		}
+
 		else {
 			if (speed > 0)
 				speed -= (acceleration * time) / 2;
@@ -50,19 +55,33 @@ struct CarSprites {
 	}
 };
 
-void init_asphalt(RectangleShape &asphalt) {
-	asphalt.setSize(Vector2f(WINDOW_SIZE.x, WINDOW_SIZE.y - LEFT_WHEEL.y - 240));
-	asphalt.setPosition(0, 250);
-	asphalt.setFillColor(Color::White);
+void init_car(RenderWindow &window, CarSprites &car) {
+	Texture body_car_image, wheel_image;
+	body_car_image.loadFromFile("images/car.png");
+	wheel_image.loadFromFile("images/wheel.png");
+	car.body_car.setTexture(body_car_image);
+	car.lef_wheel.setTexture(wheel_image);
+	car.right_wheel.setTexture(wheel_image);
+	car.set_sprites_origin();
+	window.draw(car.lef_wheel);
+	window.draw(car.right_wheel);
+	window.draw(car.body_car);
+}
+
+void init_asphalt(RenderWindow &window) {
+	Texture asphalt_image;
+	asphalt_image.loadFromFile("images/asphalt_28.jpg");
+	Sprite asphalt_sprite;
+	asphalt_sprite.setTexture(asphalt_image);
+	asphalt_sprite.setPosition(0, 185);
+	window.draw(asphalt_sprite);
 }
 
 void start_move_time(RenderWindow &window, CarSprites &car) {
 	Clock clock;
-	RectangleShape asphalt;
-	init_asphalt(asphalt);
 	while (window.isOpen()) {
 		Event event;
-		float time = clock.getElapsedTime().asMicroseconds();
+		int time = clock.getElapsedTime().asMicroseconds();
 		clock.restart();
 		time = time / 700;
 		while (window.pollEvent(event)) {
@@ -70,25 +89,15 @@ void start_move_time(RenderWindow &window, CarSprites &car) {
 				window.close();
 		}
 		car.calculation_speed_and_rotation(event, time);
-		window.clear();
-		window.draw(asphalt);
-		window.draw(car.lef_wheel);
-		window.draw(car.right_wheel);
-		window.draw(car.body_car);
-		window.display();
+	window.clear();
+	init_car(window, car);
+	init_asphalt(window);
+	window.display();
 	}
 }
 
 int main() {
-	Texture body_car_image, wheel_image;
-	body_car_image.loadFromFile("images/car.png");
-	wheel_image.loadFromFile("images/wheel.png");
-
 	CarSprites car;
-	car.body_car.setTexture(body_car_image);
-	car.lef_wheel.setTexture(wheel_image);
-	car.right_wheel.setTexture(wheel_image);
-	car.set_sprites_origin();
 
 	ContextSettings settings;
 	settings.antialiasingLevel = 8;
